@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>超级验证码在线版本</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f7f7f7;
+  }
+  .container {
+    text-align: center;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  input, button, textarea {
+    width: calc(100% - 22px);
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    outline: none;
+  }
+  button {
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: #4cae4c;
+  }
+  textarea {
+    height: 100px;
+    resize: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <input type="text" id="dhmInput" placeholder="输入兑换码">
+  <input type="text" id="zjmInput" placeholder="输入主机码（游戏->设置->查看主机码）">
+  <button onclick="copyText()">生成验证码</button>
+  <textarea id="myTextarea" readonly>点击上面的按钮生成验证码</textarea>
+</div>
+
+<script>
+
+var serverSite = 'http://tx.holyond.top:11541/'
+function copyText() {
+  var dhmInput = document.getElementById("dhmInput");
+  var zjmInput = document.getElementById("zjmInput");
+  var copyTextarea = document.getElementById("myTextarea");
+
+  fetch(serverSite + 'ma', {
+                method: 'POST', 
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  zjm : zjmInput.value,
+                  dhm : dhmInput.value
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data && data.success && data.data){
+                  copyTextarea.value = data.data;
+                  copyTextarea.select();
+                  document.execCommand("copy");
+                }else{
+                  // copyTextarea.value = '生成验证码失败...............';
+                  alert('生成验证码失败:' + (data ? (data.msg || '') : ''))
+                }
+                
+            })
+            .catch(error => {
+              alert('内部错误，请联系群里大佬')
+            });
+}
+</script>
+
+</body>
+</html>
